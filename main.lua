@@ -17,4 +17,4 @@ function love.load()
     gamestate.switch(menu)     -- Start with the menu state
 end
 
--- We don't need to use love.update or love.draw, as hump.gamestate will handle that for us.
+-- We don't need to use love.update or love.draw, as hump.gamestate will handle that for us.I
