@@ -1,23 +1,24 @@
 -- Noirbound: Prologue State
-local Gamestate = require "lib.hump.gamestate"
+local gamestate = require "lib.hump.gamestate"
 local game = require "states.game"
 local utf8 = require "utf8"
+local music = require "lib.audio.bg"
 
 local prologue = {}
 
-
 -- Highlighted words and their colors:
 local highlightedWords = {
-    ["chaos"]     = { 1, 0.2, 0.2 }, -- red
-    ["broke"]     = { 0.2, 1, 0.2 }, -- green
-    ["colour"]    = { 1, 0.5, 0 },   -- orange
-    ["colours"]   = { 1, 0.5, 0 },   -- orange
-    ["burn"]      = { 1, 0.2, 0.2 }, -- red
-    ["axel"]      = { 0.5, 0.7, 1 }, -- blue
-    ["corrupted"] = { 1, 0.2, 0.2 }, -- red
-    ["snaps"]     = { 1, 0.2, 0.2 }, -- red
-    ["noirbound"] = { 0.8, 0.2, 1 }, -- purple
-    ["glory"]     = { 0.5, 0.7, 1 }, -- blue
+    ["chaos"]       = { 1, 0.2, 0.2 }, -- red
+    ["broke"]       = { 0.2, 1, 0.2 }, -- green
+    ["colour"]      = { 1, 0.5, 0 },   -- orange
+    ["colours"]     = { 1, 0.5, 0 },   -- orange
+    ["burn"]        = { 1, 0.2, 0.2 }, -- red
+    ["destruction"] = { 1, 0.2, 0.2 }, -- red
+    ["axel"]        = { 0.5, 0.7, 1 }, -- blue
+    ["corrupted"]   = { 1, 0.2, 0.2 }, -- red
+    ["snaps"]       = { 1, 0.2, 0.2 }, -- red
+    ["noirbound"]   = { 0.8, 0.2, 1 }, -- purple
+    ["glory"]       = { 0.5, 0.7, 1 }, -- blue
 }
 
 -- Custom functions:
@@ -51,7 +52,7 @@ function prologue:enter()
     self.fullText = "In a city twisted by colour and chaos one man wakes to a world he no longer recognizes.\n\n" ..
         "The truth is always black and white, but something broke and now the colours burn into everything.\n\n" ..
         "Memories are fracturing as reality bends and axel remembers what everyone else forgets.\n\n" ..
-        "Four tablets of legend once kept the balance but they've been corrupted, and the world spirals.\n\n" ..
+        "Four tablets of legend once kept the balance but they've been corrupted and the world spirals towards destruction.\n\n" ..
         "Find them, reset them, before the last threads of the world snap and it's too late.\n\n" ..
         "You are now noirbound, restore the world to it's former colourless glory.\n\n"
     self.currentText = ""
@@ -60,14 +61,15 @@ function prologue:enter()
     self.speed = 0.05
     self.finished = false
 
-    -- Audio management:
-    self.backgroundMusic = love.audio.newSource("assets/sfx/bg1.wav", "static")
-    self.backgroundMusic:setLooping(true)
-    self.backgroundMusic:setVolume(1.0)
-    self.backgroundMusic:play()
+    -- Background music setup:
+    music.play("assets/sfx/bg5.wav", true, true)
 end
 
 function prologue:update(dt)
+    -- Update the background music:
+    music.update(dt)
+
+    -- Update the prologue text using a timer and typewriter effect:
     if not self.finished then
         self.timer = self.timer + dt
         while self.timer >= self.speed and self.charIndex < #self.fullText do
@@ -116,14 +118,8 @@ function prologue:keypressed(key)
             self.currentText = self.fullText
             self.finished = true
         else
-            Gamestate.switch(game)
+            gamestate.switch(game)
         end
-    end
-end
-
-function prologue:leave()
-    if self.music and self.music:isPlaying() then
-        self.music:stop()
     end
 end
 
