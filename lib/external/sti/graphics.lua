@@ -1,3 +1,5 @@
+---@diagnostic disable: redundant-parameter
+
 local lg       = _G.love.graphics
 local graphics = { isCreated = lg and true or false }
 
