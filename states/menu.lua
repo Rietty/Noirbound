@@ -2,6 +2,7 @@
 local gamestate = require "lib.external.hump.gamestate"
 local prologue = require "states.prologue"
 local music = require "lib.internal.audio.bg"
+local sprites = require "lib.external.shard.spritesheet"
 
 local menu = {}
 
@@ -12,6 +13,9 @@ function menu:enter()
 
     -- Music:
     music.play("assets/sfx/bg5.wav", true, true)
+
+    -- Sprites:
+    self.frames = sprites:new("assets/sprites/ui/frames.lua")
 end
 
 function menu:update(dt)
@@ -27,6 +31,11 @@ function menu:draw()
     love.graphics.printf("NOIRBOUND", 0, 0, love.graphics.getWidth(), "center")
     love.graphics.setFont(self.subtitleFont)
     love.graphics.printf("Press Enter to start", 0, love.graphics.getHeight() - 100, love.graphics.getWidth(), "center")
+
+    self.frames:draw("border_corner_top_left", 0, 0, 0, 4, 4)
+    self.frames:draw("border_corner_top_right", love.graphics.getWidth() / 2 - 16, 0, 0, 4, 4)
+    self.frames:draw("border_corner_bottom_left", 0, love.graphics.getHeight() / 2 - 16, 0, 4, 4)
+    self.frames:draw("border_corner_bottom_right", love.graphics.getWidth() / 2 - 16, love.graphics.getHeight() / 2 - 16, 0, 4, 4)
 end
 
 function menu:keypressed(key)

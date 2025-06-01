@@ -5,8 +5,8 @@ function love.conf(t)
     t.window.width = 800
     t.window.height = 600
     t.window.resizable = false
-    t.window.vsync = true
-    t.window.msaa = 4
+    t.window.vsync = false
+    t.window.msaa = 0
 
     -- Enable modules
     t.modules.audio = true
