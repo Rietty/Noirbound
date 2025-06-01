@@ -4,7 +4,7 @@ function love.conf(t)
     t.window.title = "Noirbound"
     t.window.width = 800
     t.window.height = 600
-    t.window.resizable = true
+    t.window.resizable = false
     t.window.vsync = true
     t.window.msaa = 4
 
