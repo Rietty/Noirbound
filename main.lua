@@ -1,7 +1,7 @@
 -- Noirbound: Main Entrypoint
 
 -- Library imports:
-local Gamestate = require "lib.hump.gamestate"
+local Gamestate = require "lib.external.hump.gamestate"
 
 -- Game states:
 local menu      = require "states.menu"

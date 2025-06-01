@@ -1,27 +1,27 @@
 -- Noirbound: Menu State
-local gamestate = require "lib.hump.gamestate"
+local gamestate = require "lib.external.hump.gamestate"
 local prologue = require "states.prologue"
-local music = require "lib.audio.bg"
+local music = require "lib.internal.audio.bg"
 
 local menu = {}
 
--- Loading assets and initializing the menu state:
 function menu:enter()
-    -- Font management:
+    -- Font:
     self.titleFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 72)
     self.subtitleFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 24)
 
-    -- Background music setup:
+    -- Music:
     music.play("assets/sfx/bg5.wav", true, true)
 end
 
 function menu:update(dt)
-    -- Update the background music:
+    -- Music:
     music.update(dt)
 end
 
 function menu:draw()
-    love.graphics.clear(0, 0, 0) -- Clear the screen with black
+    -- Draw menu text:
+    love.graphics.clear(0, 0, 0)
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(self.titleFont)
     love.graphics.printf("NOIRBOUND", 0, 0, love.graphics.getWidth(), "center")
