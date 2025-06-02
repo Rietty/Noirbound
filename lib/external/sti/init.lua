@@ -274,6 +274,7 @@ function Map:setAtlasTiles(index, tileset, coords, gid)
     for i = 1, #tileset.tiles do
         local tile = tileset.tiles[i]
         if tile.terrain then
+---@diagnostic disable-next-line: lowercase-global
             terrain = {}
 
             for j = 1, #tile.terrain do
