@@ -1,9 +1,11 @@
--- Noirbound: Configuration File
+-- Noirbound: Configuration File for Default Settings
+local config = require "config"
+
 
 function love.conf(t)
     t.window.title = "Noirbound"
-    t.window.width = 800
-    t.window.height = 640
+    t.window.width = config.virtualWidth * 2
+    t.window.height = config.virtualHeight * 2
     t.window.resizable = false
     t.window.vsync = false
     t.window.msaa = 0

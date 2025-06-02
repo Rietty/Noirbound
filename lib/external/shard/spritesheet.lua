@@ -33,7 +33,6 @@ function spritesheet:new(filename)
 
     local config = love.filesystem.load(filename)()
     instance.image = love.graphics.newImage(config.image)
-    instance.image:setFilter(config.filter or "nearest", config.filter or "nearest")
     instance.quads = {}
 
     for i, v in pairs(config.sprites) do
