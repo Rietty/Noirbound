@@ -52,7 +52,7 @@ function textbox:update(dt)
     end
 end
 
-function textbox:draw(centerY)
+function textbox:draw(exit, centerY)
     local wrapWidth = love.graphics.getWidth() - 100
     local _, wrapped = self.font:getWrap(self.currentText, wrapWidth)
     local textHeight = #wrapped * self.font:getHeight()
@@ -70,8 +70,13 @@ function textbox:draw(centerY)
 
     if self.finished then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.printf("Press Space to continue...", 0, love.graphics.getHeight() - 60, love.graphics.getWidth(),
-        "center")
+        if exit then
+            love.graphics.printf("Press Space to exit...", 0, love.graphics.getHeight() - 60, love.graphics.getWidth(),
+                "center")
+        else
+            love.graphics.printf("Press Space to continue...", 0, love.graphics.getHeight() - 60, love.graphics.getWidth(),
+                "center")
+        end
     end
 end
 

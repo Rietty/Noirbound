@@ -1,7 +1,7 @@
 local gamestate = require "lib.external.hump.gamestate"
-local game = require "states.game"
+local credits = require "states.credits"
 local music = require "lib.internal.audio.bg"
-local Textbox = require "lib.internal.text.dynamic"
+local textbox = require "lib.internal.text.dynamic"
 
 local prologue = {}
 
@@ -31,7 +31,7 @@ function prologue:enter()
         "Four tablets of legend once kept the balance but they've been corrupted and the world spirals towards destruction.\n\n" ..
         "Find them, reset them, before the last threads of the world snap and it's too late.\n\n" ..
         "You are now noirbound, restore the world to it's former colourless glory.\n\n"
-    self.textbox = Textbox.new(text, font, 0.05, highlights)
+    self.textbox = textbox.new(text, font, 0.05, highlights)
 
     -- Music:
     music.play("assets/sfx/bg5.wav", true, true)
@@ -40,7 +40,7 @@ end
 function prologue:update(dt)
     -- Music:
     music.update(dt)
-    -- Textbox:
+    -- textbox:
     self.textbox:update(dt)
 end
 
@@ -54,7 +54,7 @@ function prologue:keypressed(key)
         if not self.textbox.finished then
             self.textbox:skip()
         else
-            gamestate.switch(game)
+            gamestate.switch(credits)
         end
     end
 end
