@@ -2,7 +2,7 @@
 
 local config = {}
 
-config.virtualWidth = 400
-config.virtualHeight = 320
+config.virtualWidth = 200
+config.virtualHeight = 160
 
 return config

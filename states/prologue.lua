@@ -21,8 +21,9 @@ local highlights = {
 
 function prologue:enter()
     -- Font:
-    local font = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 14)
+    local font = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 12)
     love.graphics.setFont(font)
+    love.graphics.setDefaultFilter("nearest", "nearest")
 
     -- Textbox:
     local text = "In a city twisted by colour and chaos one man wakes to a world he no longer recognizes.\n\n" ..

@@ -3,7 +3,7 @@ local config = require "config"
 local gamestate = require "lib.external.hump.gamestate"
 local prologue = require "states.prologue"
 local music = require "lib.internal.audio.bg"
-local grid = require "lib.internal.utils.grid"
+local sti = require "lib.external.sti"
 
 local menu = {}
 
@@ -11,7 +11,7 @@ function menu:enter()
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:
     self.canvas = love.graphics.newCanvas(config.virtualWidth, config.virtualHeight)
     self.canvas:setFilter("nearest", "nearest")
-    self.baseFontSize = 42
+    self.baseFontSize = 18
 
     -- Calculate the scale factor and load fonts based off scaling factor.
     self.scale = math.floor(
@@ -30,10 +30,13 @@ function menu:enter()
 
     -- Music:
     music.play("assets/sfx/bg5.wav", true, true)
+
+    -- Load the map:
+    self.map = sti("assets/maps/menu.lua")
 end
 
 function menu:update(dt)
-    -- Do stuff here.
+    self.map:update(dt)
 end
 
 function menu:draw()
@@ -45,6 +48,9 @@ function menu:draw()
     love.graphics.setColor(1, 1, 1) -- Set text color to white.
     love.graphics.setFont(self.titleFont)
     love.graphics.print("NOIRBOUND", (config.virtualWidth / 2) - (self.titleFont:getWidth("NOIRBOUND") / 2),  - self.fontAscent / 2)
+
+    -- Draw the map:
+    self.map:draw()
 
     -- Process canvas stuff and draw to screen via scaling:
     love.graphics.setCanvas()

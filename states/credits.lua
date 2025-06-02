@@ -14,8 +14,9 @@ local highlights = {
 
 function credits:enter()
     -- Font:
-    local font = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 14)
+    local font = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 12)
     love.graphics.setFont(font)
+    love.graphics.setDefaultFilter("nearest", "nearest")
 
     -- Textbox:
     local text = "Credits:\n\n" ..
