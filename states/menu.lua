@@ -36,7 +36,7 @@ function menu:draw()
     love.graphics.clear(0, 0, 0)
 
     -- Draw the grid:
-    -- grid:draw(self.gridSize)
+    grid:draw(self.gridSize)
 
     -- Draw title text:
     love.graphics.setColor(1, 1, 1) -- Reset color to white
@@ -60,6 +60,9 @@ function menu:draw()
     self.frames:draw("corner_box_top_right", self.gameWidth - 48, 32, 0, 2, 2)
     self.frames:draw("corner_box_bottom_left", 32, 112, 0, 2, 2)
     self.frames:draw("corner_box_bottom_right", self.gameWidth - 48, 112, 0, 2, 2)
+
+    -- Draw the button menu borders and corners:
+    
 end
 
 function menu:keypressed(key)
