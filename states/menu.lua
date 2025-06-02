@@ -4,7 +4,6 @@ local prologue = require "states.prologue"
 local music = require "lib.internal.audio.bg"
 local grid = require "lib.internal.utils.grid"
 local sprites = require "lib.external.shard.spritesheet"
-local button = require "lib.internal.ui.button"
 
 local menu = {}
 
@@ -25,42 +24,6 @@ function menu:enter()
 
     -- Load sprites:
     self.frames = sprites:new("assets/sprites/ui/frames.lua")
-    self.inputs = sprites:new("assets/sprites/ui/inputs.lua")
-
-    -- Create buttons:
-    self.buttons = {
-        exit = button:new(
-            256, 256, 48, 32,
-            "Exit", self.subtitleFont, 24,
-            self.inputs,
-            function()
-                print("Exit button pressed")
-            end
-        ),
-    }
-end
-
-function menu:update(dt)
-    -- Music:
-    music.update(dt)
-    -- Process buttons:
-    for _, btn in pairs(self.buttons) do
-        btn:update(dt)
-    end
-end
-
-function menu:mousepressed(x, y, button)
-    -- Process buttons:
-    for _, btn in pairs(self.buttons) do
-        btn:mousepressed(x, y, button)
-    end
-end
-
-function menu:mousereleased(x, y, button)
-    -- Process buttons:
-    for _, btn in pairs(self.buttons) do
-        btn:mousereleased(x, y, button)
-    end
 end
 
 function menu:draw()
@@ -93,11 +56,6 @@ function menu:draw()
     self.frames:draw("corner_box_top_right", self.gameWidth - 48, 32, 0, 2, 2)
     self.frames:draw("corner_box_bottom_left", 32, 112, 0, 2, 2)
     self.frames:draw("corner_box_bottom_right", self.gameWidth - 48, 112, 0, 2, 2)
-
-    -- Draw button:
-    for _, btn in pairs(self.buttons) do
-        btn:draw()
-    end
 end
 
 function menu:keypressed(key)
