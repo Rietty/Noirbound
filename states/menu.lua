@@ -4,6 +4,7 @@ local prologue = require "states.prologue"
 local music = require "lib.internal.audio.bg"
 local grid = require "lib.internal.utils.grid"
 local sprites = require "lib.external.shard.spritesheet"
+local sti = require "lib.external.sti"
 
 local menu = {}
 
@@ -24,6 +25,14 @@ function menu:enter()
 
     -- Load sprites:
     self.frames = sprites:new("assets/sprites/ui/frames.lua")
+
+    -- Load the map:
+    self.map = sti("assets/maps/menu.lua")
+end
+
+function menu:update(dt)
+    -- Update the map:
+    self.map:update(dt)
 end
 
 function menu:draw()
@@ -31,7 +40,7 @@ function menu:draw()
     love.graphics.clear(0, 0, 0)
 
     -- Draw the grid:
-    grid:draw(self.gridSize)
+    -- grid:draw(self.gridSize)
 
     -- Draw title text:
     love.graphics.setColor(1, 1, 1) -- Reset color to white
@@ -56,6 +65,9 @@ function menu:draw()
     self.frames:draw("corner_box_top_right", self.gameWidth - 48, 32, 0, 2, 2)
     self.frames:draw("corner_box_bottom_left", 32, 112, 0, 2, 2)
     self.frames:draw("corner_box_bottom_right", self.gameWidth - 48, 112, 0, 2, 2)
+
+    -- Draw the map:
+    self.map:draw()
 end
 
 function menu:keypressed(key)
