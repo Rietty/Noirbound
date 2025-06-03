@@ -11,7 +11,6 @@ function menu:enter()
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:
     self.canvas = love.graphics.newCanvas(config.virtualWidth, config.virtualHeight)
     self.canvas:setFilter("nearest", "nearest")
-    self.baseFontSize = 18
 
     -- Calculate the scale factor and load fonts based off scaling factor.
     self.scale = math.floor(
@@ -25,7 +24,8 @@ function menu:enter()
     self.drawOffsetY = math.floor((love.graphics.getHeight() - config.virtualHeight * self.scale) / 2)
 
     -- Font:
-    self.titleFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", self.baseFontSize)
+    self.titleFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 18)
+    self.startFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 6)
     self.fontAscent = self.titleFont:getAscent()
 
     -- Music:
@@ -48,6 +48,10 @@ function menu:draw()
     love.graphics.setColor(1, 1, 1) -- Set text color to white.
     love.graphics.setFont(self.titleFont)
     love.graphics.print("NOIRBOUND", (config.virtualWidth / 2) - (self.titleFont:getWidth("NOIRBOUND") / 2),  - self.fontAscent / 2)
+
+    -- Draw start text:
+    love.graphics.setFont(self.startFont)
+    love.graphics.print("Press Enter to Start...", (config.virtualWidth / 2) - (self.startFont:getWidth("Press Enter to Start...") / 2), config.virtualHeight - self.fontAscent / 2 - 2)
 
     -- Draw the map:
     self.map:draw()

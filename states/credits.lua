@@ -14,7 +14,7 @@ local highlights = {
 
 function credits:enter()
     -- Font:
-    local font = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 12)
+    local font = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 16)
     love.graphics.setFont(font)
     love.graphics.setDefaultFilter("nearest", "nearest")
 
