@@ -1,5 +1,5 @@
 local gamestate = require "lib.external.hump.gamestate"
-local credits = require "states.credits"
+local game = require "states.game"
 local music = require "lib.internal.audio.bg"
 local textbox = require "lib.internal.text.dynamic"
 
@@ -55,7 +55,7 @@ function prologue:keypressed(key)
         if not self.textbox.finished then
             self.textbox:skip()
         else
-            gamestate.switch(credits)
+            gamestate.switch(game)
         end
     end
 end
