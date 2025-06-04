@@ -1,10 +1,12 @@
--- Noirbound: Menu State
-local config = require "config"
-local gamestate = require "lib.external.hump.gamestate"
-local prologue = require "states.prologue"
-local music = require "lib.internal.audio.bg"
-local sti = require "lib.external.sti"
+-- Noirbound: Menu Game State
 
+local config = require "config"
+local gamestate = require "libs.external.hump.gamestate"
+local prologue = require "states.prologue"
+local music = require "libs.internal.audio.bg"
+local sti = require "libs.external.sti"
+
+-- Required for GameState management.
 local menu = {}
 
 function menu:enter()
@@ -27,7 +29,7 @@ function menu:enter()
     self.titleFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 18)
     self.startFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 6)
     self.fontAscent = self.titleFont:getAscent()
-
+    
     -- Music:
     music.play("assets/sfx/bg5.wav", true, true)
 
@@ -36,6 +38,10 @@ function menu:enter()
 end
 
 function menu:update(dt)
+    -- Music:
+    music.update(dt)
+
+    -- Update the map:
     self.map:update(dt)
 end
 

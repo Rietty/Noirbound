@@ -32,22 +32,22 @@ local Concord = {
    ]]
 }
 
---- @module "lib.external.concord.concord.entity"
+--- @module "libs.external.concord.concord.entity"
 Concord.entity = require(PATH .. ".entity")
 
---- @module "lib.external.concord.concord.component"
+--- @module "libs.external.concord.concord.component"
 Concord.component = require(PATH .. ".component")
 
---- @module "lib.external.concord.concord.components"
+--- @module "libs.external.concord.concord.components"
 Concord.components = require(PATH .. ".components")
 
---- @module "lib.external.concord.concord.system"
+--- @module "libs.external.concord.concord.system"
 Concord.system = require(PATH .. ".system")
 
---- @module "lib.external.concord.concord.world"
+--- @module "libs.external.concord.concord.world"
 Concord.world = require(PATH .. ".world")
 
---- @module "lib.external.concord.concord.utils"
+--- @module "libs.external.concord.concord.utils"
 Concord.utils = require(PATH .. ".utils")
 
 return Concord

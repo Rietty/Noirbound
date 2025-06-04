@@ -1,7 +1,7 @@
-local gamestate = require "lib.external.hump.gamestate"
+local gamestate = require "libs.external.hump.gamestate"
 local game = require "states.game"
-local music = require "lib.internal.audio.bg"
-local textbox = require "lib.internal.text.dynamic"
+local music = require "libs.internal.audio.bg"
+local screenwriter = require "libs.internal.text.screenwriter"
 
 local prologue = {}
 
@@ -25,14 +25,14 @@ function prologue:enter()
     love.graphics.setFont(font)
     love.graphics.setDefaultFilter("nearest", "nearest")
 
-    -- Textbox:
+    -- Screenwriter:
     local text = "One man wakes to a world twisted by colour and chaos.\n\n" ..
         "Truth is black and white, but something broke and now the colours burn.\n\n" ..
         "Memories are fracturing and only axel remembers what everyone else forgets.\n\n" ..
         "Artifacts once kept the balance but they've been corrupted.\n\n" ..
         "Find them, fix them, before the last threads of reality snap and it's too late.\n\n" ..
         "You are now noirbound.\n\n"
-    self.textbox = textbox.new(text, font, 0.05, highlights)
+    self.screenwriter = screenwriter.new(text, font, 0.05, highlights)
 
     -- Music:
     music.play("assets/sfx/bg5.wav", true, true)
@@ -41,19 +41,19 @@ end
 function prologue:update(dt)
     -- Music:
     music.update(dt)
-    -- textbox:
-    self.textbox:update(dt)
+    -- Screenwriter:
+    self.screenwriter:update(dt)
 end
 
 function prologue:draw()
     love.graphics.clear(0, 0, 0)
-    self.textbox:draw()
+    self.screenwriter:draw()
 end
 
 function prologue:keypressed(key)
     if key == "space" then
-        if not self.textbox.finished then
-            self.textbox:skip()
+        if not self.screenwriter.finished then
+            self.screenwriter:skip()
         else
             gamestate.switch(game)
         end
