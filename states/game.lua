@@ -8,7 +8,9 @@ local gamestate = require "lib.external.hump.gamestate"
 local gameover = require "states.gameover"
 local credits = require "states.credits"
 local sti = require "lib.external.sti"
-local ecs = require "lib.external.ecs.tiny"
+
+--- @module "lib.external.concord.concord"
+local concord = require "concord"
 
 local game = {}
 local currentLevel = 1
