@@ -26,7 +26,7 @@ function prologue:enter()
     love.graphics.setDefaultFilter("nearest", "nearest")
 
     -- Screenwriter:
-    local text = "One man wakes to a world twisted by colour and chaos.\n\n" ..
+    local text = "One man wakes to a world twisted by colour and full of chaos.\n\n" ..
         "Truth is black and white, but something broke and now the colours burn.\n\n" ..
         "Memories are fracturing and only axel remembers what everyone else forgets.\n\n" ..
         "Artifacts once kept the balance but they've been corrupted.\n\n" ..
