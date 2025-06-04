@@ -1,10 +1,14 @@
+-- Noirbound: Prologue Game State
+
 local gamestate = require "libs.external.hump.gamestate"
 local game = require "states.game"
 local music = require "libs.internal.audio.bg"
 local screenwriter = require "libs.internal.text.screenwriter"
 
+-- Required for GameState management.
 local prologue = {}
 
+-- Following words are automatically highlighted with the specified colors.
 local highlights = {
     chaos     = { 1, 0.2, 0.2 },
     broke     = { 0.2, 1, 0.2 },
