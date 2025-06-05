@@ -6,6 +6,7 @@
 
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
+local config = require "config"
 
 -- Required for GameState management.
 local game = {}
@@ -31,6 +32,22 @@ function game:enter()
         systems.draw,
         systems.move
     )
+
+    -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:
+    self.canvas = love.graphics.newCanvas(config.virtualWidth, config.virtualHeight)
+    self.canvas:setFilter("nearest", "nearest")
+
+    -- Calculate the scale factor and load fonts based off scaling factor.
+    self.scale = math.floor(
+        math.min(
+            love.graphics.getWidth() / config.virtualWidth,
+            love.graphics.getHeight() / config.virtualHeight
+        )
+    )
+
+    self.drawOffsetX = math.floor((love.graphics.getWidth() - config.virtualWidth * self.scale) / 2)
+    self.drawOffsetY = math.floor((love.graphics.getHeight() - config.virtualHeight * self.scale) / 2)
+
 end
 
 -- Update per time unit.
@@ -40,7 +57,18 @@ end
 
 -- Draw per frame.
 function game:draw()
+    -- Set canvas
+    love.graphics.setCanvas(self.canvas)
+    love.graphics.clear(0, 0, 0)
+
+    -- ECS draws entities to current canvas
     self.world:emit("draw")
+
+    -- Scale + draw canvas to screen
+    love.graphics.setCanvas()
+    love.graphics.setBlendMode("alpha", "premultiplied")
+    love.graphics.draw(self.canvas, self.drawOffsetX, self.drawOffsetY, 0, self.scale, self.scale)
+    love.graphics.setBlendMode("alpha", "alphamultiply")
 end
 
 return game
