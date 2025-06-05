@@ -6,10 +6,13 @@
 local concord = require "libs.external.concord.concord"
 concord.utils.loadNamespace("src/components")
 
-function character(e, x, y)
-    e
-    :give("position", x, y)
-    :give("velocity", 10, 10)
-    :give("health", 6)
-    :give("size", 8, 8)
+-- The below function creates a character entity which contains the default components every character should have.
+-- A character entity is a player or an enemy in the game, or even a non-playable character (NPC).
+return function(entity, x, y)
+    entity:give("position", x, y)
+    :give("velocity", 0, 0)
+    :give("direction", 1, 1)
+    :give("state")
+    :give("health")
+    :give("state")
 end

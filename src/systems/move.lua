@@ -4,13 +4,19 @@
 -- Load all components via concord.
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
+local vector = require "libs.external.brine.vector"
 
 local MoveSystem = concord.system({ pool = { "position", "velocity" } })
 
 function MoveSystem:update(dt)
     for _, e in ipairs(self.pool) do
-        e.position.x = e.position.x + e.velocity.x * dt
-        e.position.y = e.position.y + e.velocity.y * dt
+        local vel = e.velocity.vec
+        local pos = e.position.vec
+        local dir = e.direction.vec
+        local speed = e.speed.value
+
+        vel.x, vel.y = vector.split(vel + dir * speed * dt)
+        pos.x, pos.y = vector.split(pos + vel * dt)
     end
 end
 

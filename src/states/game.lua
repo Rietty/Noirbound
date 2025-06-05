@@ -12,7 +12,8 @@ local config = require "config"
 local game = {}
 
 -- Load all entity assemblage functions so we can create entities.
-concord.utils.loadNamespace("src/entities")
+local entities = {}
+concord.utils.loadNamespace("src/entities", entities)
 
 -- Load all systems into the namespace.
 local systems = {}
@@ -25,7 +26,7 @@ function game:enter()
 
     -- Create a new entity
     self.player = concord.entity(self.world)
-    self.player:assemble(character, 50, 50)
+    entities.player(self.player, 0, 0, 5, 5)
 
     -- Add systems to the world.
     self.world:addSystems(

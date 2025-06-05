@@ -10,8 +10,10 @@ local DrawSystem = concord.system({ pool = { "position", "size" } })
 
 function DrawSystem:draw()
     for _, e in ipairs(self.pool) do
+        local pos = e.position.vec
+
         love.graphics.setColor(1, 1, 1) -- Reset color to white
-        love.graphics.rectangle("fill", e.position.x, e.position.y, e.size.w, e.size.h)
+        love.graphics.rectangle("fill", pos.x, pos.y, e.size.width, e.size.height)
     end
 end
 
