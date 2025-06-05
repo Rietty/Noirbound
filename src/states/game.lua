@@ -24,15 +24,23 @@ function game:enter()
 
     -- Create a new entity
     self.player = concord.entity(self.world)
-    self.player:assemble(character, 0, 0)
+    self.player:assemble(character, 50, 50)
+
+    -- Add systems to the world.
+    self.world:addSystems(
+        systems.draw,
+        systems.move
+    )
 end
 
 -- Update per time unit.
 function game:update(dt)
+    self.world:emit("update", dt)
 end
 
 -- Draw per frame.
 function game:draw()
+    self.world:emit("draw")
 end
 
 return game

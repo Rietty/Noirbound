@@ -9,7 +9,7 @@ concord.utils.loadNamespace("src/components")
 function character(e, x, y)
     e
     :give("position", x, y)
-    :give("velocity", 0, 0)
+    :give("velocity", 1, 1)
     :give("health", 6)
     :give("size", 8, 8)
 end
