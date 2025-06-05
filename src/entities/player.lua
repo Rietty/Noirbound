@@ -15,5 +15,5 @@ return function(entity, x, y, width, height)
     :give("persistent")
     :give("size", width, height)
     :give("sprite")
-    :give("speed", 50)
+    :give("speed", 100000)
 end

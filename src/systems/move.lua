@@ -9,14 +9,10 @@ local vector = require "libs.external.brine.vector"
 local MoveSystem = concord.system({ pool = { "position", "velocity" } })
 
 function MoveSystem:update(dt)
-    for _, e in ipairs(self.pool) do
-        local vel = e.velocity.vec
-        local pos = e.position.vec
-        local dir = e.direction.vec
-        local speed = e.speed.value
+    local width, height = love.graphics.getWidth() / 4, love.graphics.getHeight() / 4
 
-        vel.x, vel.y = vector.split(vel + dir * speed * dt)
-        pos.x, pos.y = vector.split(pos + vel * dt)
+    for _, e in ipairs(self.pool) do
+        -- Do nothing.
     end
 end
 
