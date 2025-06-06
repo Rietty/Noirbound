@@ -11,13 +11,16 @@ local InputSystem = concord.system({ pool = { "direction", "grounded", "controll
 function InputSystem:update(dt)
     for _, e in ipairs(self.pool) do
         local dx = 0
+        
         if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
             dx = dx - 1
+            e.facing.value = "left"
         end
         if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
             dx = dx + 1
+            e.facing.value = "right"
         end
-
+        
         e.direction.vec.x = dx
         e.direction.vec.y = 0
 

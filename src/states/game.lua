@@ -40,7 +40,8 @@ function game:enter()
         systems.input,
         systems.physics,
         systems.move,
-        systems.state
+        systems.state,
+        systems.animation
     )
 
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:
