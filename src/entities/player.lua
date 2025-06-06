@@ -14,10 +14,11 @@ return function(entity, x, y, width, height)
     :give("friction")
     :give("gravity")
     :give("persistent")
+    :give("grounded")
     :give("size", width, height)
     :give("sprite")
     :give("controllable")
     :give("interactor")
     :give("speed", 100)
-
+    :give("id", "AXEL")
 end

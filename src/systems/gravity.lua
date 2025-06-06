@@ -10,11 +10,8 @@ local GravitySystem = concord.system({ pool = { "velocity", "gravity" } })
 
 function GravitySystem:update(dt)
     for _, e in ipairs(self.pool) do
-        local vy = e.velocity.vec.y
-        local g = e.gravity.strength
-
         -- Apply gravity to the vertical component of velocity.
-        vy = vy + g * dt
+        e.velocity.vec.y = e.velocity.vec.y + e.gravity.strength * dt
     end
 end
 

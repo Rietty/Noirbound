@@ -7,6 +7,7 @@
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
 local config = require "config"
+local music = require "libs.internal.audio.bg"
 
 -- Required for GameState management.
 local game = {}
@@ -26,7 +27,7 @@ function game:enter()
 
     -- Create a new entity
     self.player = concord.entity(self.world)
-    entities.player(self.player, 0, 0, 5, 5)
+    entities.player(self.player, 0, 0, 8, 8)
 
     -- Add systems to the world.
     self.world:addSystems(
@@ -54,10 +55,15 @@ function game:enter()
     self.drawOffsetX = math.floor((love.graphics.getWidth() - config.virtualWidth * self.scale) / 2)
     self.drawOffsetY = math.floor((love.graphics.getHeight() - config.virtualHeight * self.scale) / 2)
 
+    -- Music:
+    music.play("assets/sfx/bg1.wav", true, true)
 end
 
 -- Update per time unit.
 function game:update(dt)
+    -- Update music:
+    music.update(dt)
+    -- Update the world with the delta time.
     self.world:emit("update", dt)
 end
 
@@ -67,12 +73,13 @@ function game:draw()
     love.graphics.setCanvas(self.canvas)
     love.graphics.clear(0, 0, 0)
 
-    -- ECS draws entities to current canvas
-    self.world:emit("draw")
-
     -- Draw a single "ground line" for the player to stand on.
-    love.graphics.setColor(0.5, 0.5, 0.5, 1) -- Set color to gray
-    love.graphics.rectangle("fill", 0, config.virtualHeight - 10, config.virtualWidth, 10)
+    love.graphics.setColor(0, 1, 0, 1) -- Set color to green
+    love.graphics.rectangle("fill", 0, config.virtualHeight - 1, config.virtualWidth, 1)
+
+    -- ECS draws entities to current canvas
+    -- This should happen after any other drawing of the world, so it doesn't get overwritten or cleared.
+    self.world:emit("draw")
 
     -- Scale + draw canvas to screen
     love.graphics.setCanvas()

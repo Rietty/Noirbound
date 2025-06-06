@@ -21,8 +21,8 @@ function InputSystem:update(dt)
         e.direction.vec.x = dx
         e.direction.vec.y = 0
 
-        if love.keyboard.isDown("up") or love.keyboard.isDown("w") or love.keyboard.isDown("space") then
-            e.velocity.vec.y = -300
+        if (love.keyboard.isDown("up") or love.keyboard.isDown("w") or love.keyboard.isDown("space")) and e.grounded.value then
+            e.velocity.vec.y = -400
             e.grounded.value = false
         end
     end

@@ -10,8 +10,6 @@ local MoveSystem = concord.system({ pool = { "direction", "speed", "velocity" } 
 
 function MoveSystem:update(dt)
     for _, e in ipairs(self.pool) do
-        print("Updating MoveSystem for entity:", e)
-
         -- Move based off the direction and such.
         local direction = e.direction.vec
         local velocity = e.velocity.vec
