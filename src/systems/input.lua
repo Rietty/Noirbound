@@ -4,6 +4,7 @@
 -- Load all components via concord.
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
+local states = require "constants.character"
 concord.utils.loadNamespace("src/components")
 
 local InputSystem = concord.system({ pool = { "direction", "grounded", "controllable" } })
@@ -27,6 +28,12 @@ function InputSystem:update(dt)
         if (love.keyboard.isDown("up") or love.keyboard.isDown("w") or love.keyboard.isDown("space")) and e.grounded.value then
             e.velocity.vec.y = -400
             e.grounded.value = false
+        end
+
+        if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
+            e.damager.value = true
+        else
+            e.damager.value = false
         end
     end
 end

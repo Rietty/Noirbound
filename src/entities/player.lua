@@ -19,6 +19,7 @@ local animations = {
     idle = anim8.newAnimation(grid("1-2", 6), 0.2),
     jump = anim8.newAnimation(grid(1, 2), 0.2),
     walk = anim8.newAnimation(grid("1-2", 1), 0.2),
+    attack = anim8.newAnimation(grid(4, 3), 0.2),
 }
 
 return function(entity, x, y, width, height)
@@ -36,4 +37,5 @@ return function(entity, x, y, width, height)
     :give("id", "AXEL")
     :give("animation", animations, states.idle)
     :give("facing", "right")
+    :give("damager")
 end
