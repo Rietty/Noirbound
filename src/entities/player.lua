@@ -37,5 +37,4 @@ return function(entity, x, y, width, height)
     :give("id", "AXEL")
     :give("animation", animations, states.idle)
     :give("facing", "right")
-    :give("damager")
 end

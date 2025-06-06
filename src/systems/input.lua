@@ -30,10 +30,12 @@ function InputSystem:update(dt)
             e.grounded.value = false
         end
 
-        if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
-            e.damager.value = true
-        else
-            e.damager.value = false
+        if e:has("damager") then
+            if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
+                e.damager.value = true
+            else
+                e.damager.value = false
+            end
         end
     end
 end
