@@ -31,7 +31,9 @@ function game:enter()
     -- Add systems to the world.
     self.world:addSystems(
         systems.draw,
-        systems.move
+        systems.move,
+        systems.input,
+        systems.controller
     )
 
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:

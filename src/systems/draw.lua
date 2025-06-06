@@ -5,15 +5,19 @@
 -- Load all components via concord.
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
+concord.utils.loadNamespace("src/components")
 
 local DrawSystem = concord.system({ pool = { "position", "size" } })
 
 function DrawSystem:draw()
     for _, e in ipairs(self.pool) do
-        local pos = e.position.vec
-
-        love.graphics.setColor(1, 1, 1) -- Reset color to white
-        love.graphics.rectangle("fill", pos.x, pos.y, e.size.width, e.size.height)
+        love.graphics.setColor(1, 1, 1, 1) -- Reset color to white
+        local position = e:get("position").vec
+        local size = e:get("size")
+        local x, y = position.x, position.y
+        local width, height = size.width, size.height
+        -- Draw a rectangle at the entity's position with its size.
+        love.graphics.rectangle("fill", x, y, width, height)
     end
 end
 
