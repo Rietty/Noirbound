@@ -6,32 +6,22 @@
 local concord = require "libs.external.concord.concord"
 local vector = require "libs.external.brine.vector"
 
-local MoveSystem = concord.system({ pool = { "position", "velocity" } })
+local MoveSystem = concord.system({ pool = { "direction", "speed", "velocity" } })
 
 function MoveSystem:update(dt)
-    local width, height = love.graphics.getWidth() / 4, love.graphics.getHeight() / 4
-
     for _, e in ipairs(self.pool) do
+        print("Updating MoveSystem for entity:", e)
+
         -- Move based off the direction and such.
-        local position = e:get("position").vec
-        local velocity = e:get("velocity").vec
-        local direction = e:get("direction").vec
+        local direction = e.direction.vec
+        local velocity = e.velocity.vec
+        local speed = e.speed.value
+        local mag = math.sqrt(direction.x^2 + direction.y^2)
 
-        local speed = e:get("speed").value
-
-        velocity.x, velocity.y = vector.split(velocity + direction * speed * dt)
-        position.x, position.y = vector.split(position + velocity * dt)
-
-        -- Ensure the entity stays within the bounds of the screen.
-        if position.x < 0 then
-            position.x = 0
-        elseif position.x > width - e:get("size").width then
-            position.x = width - e:get("size").width
-        end
-        if position.y < 0 then
-            position.y = 0
-        elseif position.y > height - e:get("size").height then
-            position.y = height - e:get("size").height
+        if mag > 0 then
+            velocity.x = (direction.x / mag) * speed
+        else
+            velocity.x = 0
         end
     end
 end

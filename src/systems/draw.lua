@@ -12,10 +12,9 @@ local DrawSystem = concord.system({ pool = { "position", "size" } })
 function DrawSystem:draw()
     for _, e in ipairs(self.pool) do
         love.graphics.setColor(1, 1, 1, 1) -- Reset color to white
-        local position = e:get("position").vec
-        local size = e:get("size")
+        local position = e.position.vec
         local x, y = position.x, position.y
-        local width, height = size.width, size.height
+        local width, height = e.size.width, e.size.height
         -- Draw a rectangle at the entity's position with its size.
         love.graphics.rectangle("fill", x, y, width, height)
     end

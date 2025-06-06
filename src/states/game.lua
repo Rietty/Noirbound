@@ -31,9 +31,12 @@ function game:enter()
     -- Add systems to the world.
     self.world:addSystems(
         systems.draw,
-        systems.move,
+        systems.collision,
+        systems.friction,
+        systems.gravity,
         systems.input,
-        systems.controller
+        systems.physics,
+        systems.move
     )
 
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:
@@ -66,6 +69,10 @@ function game:draw()
 
     -- ECS draws entities to current canvas
     self.world:emit("draw")
+
+    -- Draw a single "ground line" for the player to stand on.
+    love.graphics.setColor(0.5, 0.5, 0.5, 1) -- Set color to gray
+    love.graphics.rectangle("fill", 0, config.virtualHeight - 10, config.virtualWidth, 10)
 
     -- Scale + draw canvas to screen
     love.graphics.setCanvas()

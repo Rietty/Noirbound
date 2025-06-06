@@ -6,21 +6,25 @@
 local concord = require "libs.external.concord.concord"
 concord.utils.loadNamespace("src/components")
 
-local InputSystem = concord.system({})
+local InputSystem = concord.system({ pool = { "direction", "grounded", "controllable" } })
 
 function InputSystem:update(dt)
-    -- Check for key presses and emit events accordingly.
-    if love.keyboard.isDown("left") then
-        self:getWorld():emit("moveLeft")
-    end
-    if love.keyboard.isDown("right") then
-        self:getWorld():emit("moveRight")
-    end
-    if love.keyboard.isDown("up") then
-        self:getWorld():emit("moveUp")
-    end
-    if love.keyboard.isDown("down") then
-        self:getWorld():emit("moveDown")
+    for _, e in ipairs(self.pool) do
+        local dx = 0
+        if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
+            dx = dx - 1
+        end
+        if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
+            dx = dx + 1
+        end
+
+        e.direction.vec.x = dx
+        e.direction.vec.y = 0
+
+        if love.keyboard.isDown("up") or love.keyboard.isDown("w") or love.keyboard.isDown("space") then
+            e.velocity.vec.y = -300
+            e.grounded.value = false
+        end
     end
 end
 
