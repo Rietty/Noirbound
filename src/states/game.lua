@@ -8,6 +8,8 @@
 local concord = require "libs.external.concord.concord"
 local config = require "config"
 local music = require "libs.internal.audio.bg"
+local gamestate = require "libs.external.hump.gamestate"
+local credits = require "states.credits"
 
 -- Required for GameState management.
 local game = {}
@@ -55,6 +57,9 @@ function game:enter()
     self.drawOffsetX = math.floor((love.graphics.getWidth() - config.virtualWidth * self.scale) / 2)
     self.drawOffsetY = math.floor((love.graphics.getHeight() - config.virtualHeight * self.scale) / 2)
 
+    -- Set the default font:
+    self.exitFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 6)
+
     -- Music:
     music.play("assets/sfx/bg1.wav", true, true)
 end
@@ -77,6 +82,11 @@ function game:draw()
     love.graphics.setColor(0, 1, 0, 1) -- Set color to green
     love.graphics.rectangle("fill", 0, config.virtualHeight - 1, config.virtualWidth, 1)
 
+    -- Print on top (Escape to Exit!)
+    love.graphics.setColor(1, 1, 1, 1) -- Reset color to white
+    love.graphics.setFont(self.exitFont)
+    love.graphics.print("Press Escape to Exit!", (config.virtualWidth - self.exitFont:getWidth("Press Escape to Exit!")) / 2, 4)
+
     -- ECS draws entities to current canvas
     -- This should happen after any other drawing of the world, so it doesn't get overwritten or cleared.
     self.world:emit("draw")
@@ -86,6 +96,12 @@ function game:draw()
     love.graphics.setBlendMode("alpha", "premultiplied")
     love.graphics.draw(self.canvas, self.drawOffsetX, self.drawOffsetY, 0, self.scale, self.scale)
     love.graphics.setBlendMode("alpha", "alphamultiply")
+end
+
+function game:keypressed(key)
+    if key == "escape" then
+        gamestate.switch(credits)
+    end
 end
 
 return game
