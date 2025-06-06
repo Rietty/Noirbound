@@ -4,7 +4,6 @@
 -- Load all components via concord.
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
-local vector = require "libs.external.brine.vector"
 
 local MoveSystem = concord.system({ pool = { "direction", "speed", "velocity" } })
 

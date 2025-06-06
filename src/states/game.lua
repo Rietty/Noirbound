@@ -39,7 +39,8 @@ function game:enter()
         systems.gravity,
         systems.input,
         systems.physics,
-        systems.move
+        systems.move,
+        systems.state
     )
 
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:

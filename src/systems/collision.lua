@@ -6,6 +6,7 @@
 local concord = require "libs.external.concord.concord"
 concord.utils.loadNamespace("src/components")
 
+
 local CollisionSystem = concord.system({ pool = { "velocity", "friction", "grounded" } })
 
 function CollisionSystem:update(dt)
