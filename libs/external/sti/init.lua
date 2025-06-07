@@ -19,7 +19,6 @@ local utils = require(cwd .. "utils")
 local ceil  = math.ceil
 local floor = math.floor
 local lg    = require(cwd .. "graphics")
-local atlas = require(cwd .. "atlas")
 local Map   = {}
 Map.__index = Map
 
@@ -82,6 +81,12 @@ function Map:init(path, plugins, ox, oy)
 	self.objects       = {}
 	self.tiles         = {}
 	self.tileInstances = {}
+	self.drawRange     = {
+		sx = 1,
+		sy = 1,
+		ex = self.width,
+		ey = self.height,
+	}
 	self.offsetx = ox or 0
 	self.offsety = oy or 0
 
@@ -91,46 +96,21 @@ function Map:init(path, plugins, ox, oy)
 	-- Set tiles, images
 	local gid = 1
 	for i, tileset in ipairs(self.tilesets) do
-		assert(not tileset.filename, "STI does not support external Tilesets.\nYou need to embed all Tilesets.")
+		assert(tileset.image, "STI does not support Tile Collections.\nYou need to create a Texture Atlas.")
 
-        if tileset.image then
-            -- Cache images
-            if lg.isCreated then
-                local formatted_path = utils.format_path(path .. tileset.image)
+		-- Cache images
+		if lg.isCreated then
+			local formatted_path = utils.format_path(path .. tileset.image)
 
-                if not STI.cache[formatted_path] then
-                    utils.fix_transparent_color(tileset, formatted_path)
-                    utils.cache_image(STI, formatted_path, tileset.image)
-                else
-                    tileset.image = STI.cache[formatted_path]
-                end
-            end
+			if not STI.cache[formatted_path] then
+				utils.fix_transparent_color(tileset, formatted_path)
+				utils.cache_image(STI, formatted_path, tileset.image)
+			else
+				tileset.image = STI.cache[formatted_path]
+			end
+		end
 
-            gid = self:setTiles(i, tileset, gid)
-        elseif tileset.tilecount > 0 then
-            -- Build atlas for image collection
-            local files, ids = {}, {}
-            for j = 1, #tileset.tiles do
-                files[ j ] = utils.format_path(path .. tileset.tiles[j].image)
-                ids[ j ] = tileset.tiles[j].id
-            end
-
-            local map = atlas.Atlas( files, "ids", ids )
-
-            if lg.isCreated then
-                local formatted_path = utils.format_path(path .. tileset.name)
-
-                if not STI.cache[formatted_path] then
-                    -- No need to fix transparency color for collections
-                    utils.cache_image(STI, formatted_path, map.image)
-                    tileset.image = map.image
-                else
-                    tileset.image = STI.cache[formatted_path]
-                end
-            end
-
-            gid = self:setAtlasTiles(i, tileset, map.coords, gid)
-        end
+		gid = self:setTiles(i, tileset, gid)
 	end
 
 	local layers = {}
@@ -186,7 +166,7 @@ function Map:loadPlugins(plugins)
 	end
 end
 
---- Create Tiles based on a single tileset image
+--- Create Tiles
 -- @param index Index of the Tileset
 -- @param tileset Tileset data
 -- @param gid First Global ID in Tileset
@@ -207,7 +187,6 @@ function Map:setTiles(index, tileset, gid)
 			local id    = gid - tileset.firstgid
 			local quadX = (x - 1) * tileW + margin + (x - 1) * spacing
 			local quadY = (y - 1) * tileH + margin + (y - 1) * spacing
-			local type = ""
 			local properties, terrain, animation, objectGroup
 
 			for _, tile in pairs(tileset.tiles) do
@@ -215,7 +194,6 @@ function Map:setTiles(index, tileset, gid)
 					properties  = tile.properties
 					animation   = tile.animation
 					objectGroup = tile.objectGroup
-					type        = tile.type
 
 					if tile.terrain then
 						terrain = {}
@@ -231,7 +209,6 @@ function Map:setTiles(index, tileset, gid)
 				id          = id,
 				gid         = gid,
 				tileset     = index,
-				type        = type,
 				quad        = quad(
 					quadX,  quadY,
 					tileW,  tileH,
@@ -257,60 +234,6 @@ function Map:setTiles(index, tileset, gid)
 	end
 
 	return gid
-end
-
---- Create Tiles based on a texture atlas
--- @param index Index of the Tileset
--- @param tileset Tileset data
--- @param coords Tile XY location in the atlas
--- @param gid First Global ID in Tileset
--- @return number Next Tileset's first Global ID
-function Map:setAtlasTiles(index, tileset, coords, gid)
-    local quad      = lg.newQuad
-    local imageW    = tileset.image:getWidth()
-    local imageH    = tileset.image:getHeight()
-
-    local firstgid = tileset.firstgid
-    for i = 1, #tileset.tiles do
-        local tile = tileset.tiles[i]
-        if tile.terrain then
----@diagnostic disable-next-line: lowercase-global
-            terrain = {}
-
-            for j = 1, #tile.terrain do
-                terrain[j] = tileset.terrains[tile.terrain[j] + 1]
-            end
-        end
-
-        local tile = {
-            id          = tile.id,
-            gid         = firstgid + tile.id,
-            tileset     = index,
-            class       = tile.class,
-            quad        = quad(
-                coords[i].x,  coords[i].y,
-                tile.width,  tile.height,
-                imageW, imageH
-            ),
-            properties  = tile.properties or {},
-            terrain     = terrain,
-            animation   = tile.animation,
-            objectGroup = tile.objectGroup,
-            frame       = 1,
-            time        = 0,
-            width       = tile.width,
-            height      = tile.height,
-            sx          = 1,
-            sy          = 1,
-            r           = 0,
-            offset      = tileset.tileoffset,
-        }
-
-        -- Be aware that in collections self.tiles can be a sparse array
-        self.tiles[tile.gid] = tile
-    end
-
-    return gid + #tileset.tiles
 end
 
 --- Create Layers
@@ -472,8 +395,9 @@ function Map:getLayerTilePosition(layer, tile, x, y)
 	local tileX, tileY
 
 	if self.orientation == "orthogonal" then
+		local tileset = self.tilesets[tile.tileset]
 		tileX = (x - 1) * tileW + tile.offset.x
-		tileY = (y - 0) * tileH + tile.offset.y - tile.height
+		tileY = (y - 0) * tileH + tile.offset.y - tileset.tileheight
 		tileX, tileY = utils.compensate(tile, tileX, tileY, tileW, tileH)
 	elseif self.orientation == "isometric" then
 		tileX = (x - y) * (tileW / 2) + tile.offset.x + layer.width * tileW / 2 - self.tilewidth / 2
@@ -573,9 +497,6 @@ function Map:set_batches(layer, chunk)
 	end
 
 	if self.orientation == "orthogonal" or self.orientation == "isometric" then
-		local offsetX = chunk and chunk.x or 0
-		local offsetY = chunk and chunk.y or 0
-
 		local startX     = 1
 		local startY     = 1
 		local endX       = chunk and chunk.width  or layer.width
@@ -605,7 +526,7 @@ function Map:set_batches(layer, chunk)
 				end
 
 				if tile then
-					self:addNewLayerTile(layer, chunk, tile, x + offsetX, y + offsetY)
+					self:addNewLayerTile(layer, chunk, tile, x, y)
 				end
 			end
 		end
@@ -737,7 +658,7 @@ function Map:setObjectSpriteBatches(layer)
 				layer = layer,
 				gid   = tile.gid,
 				x     = tileX,
-				y     = tileY - oy,
+				y     = tileY,
 				r     = tileR,
 				oy    = oy
 			}
@@ -797,7 +718,7 @@ function Map:convertToCustomLayer(index)
 end
 
 --- Remove a Layer from the Layer stack
--- @param index Index or name of Layer to remove
+-- @param index Index or name of Layer to convert
 function Map:removeLayer(index)
 	local layer = assert(self.layers[index], "Layer not found: " .. index)
 
@@ -898,31 +819,6 @@ function Map:draw(tx, ty, sx, sy)
 	-- Map is translated to correct position so the right section is drawn
 	lg.push()
 	lg.origin()
-	
-	--[[
-		This snippet comes from 'monolifed' on the Love2D forums,
-		however it was more or less exactly the same code I was already writing 
-		to implement the same parallax scrolling. I found his before 
-		testing and polishing mine
-		https://love2d.org/forums/viewtopic.php?p=238378#p238378
-
-		previous code commented below the new. 
-
-	]]
-
-	tx, ty = tx or 0, ty or 0
-
-	for _, layer in ipairs(self.layers) do
-		if layer.visible and layer.opacity > 0 then
-			local px, py = layer.parallaxx or 1, layer.parallaxy or 1
-			px, py = math.floor(tx * px), math.floor(ty * py)
-			lg.translate(px, py)
-			self:drawLayer(layer)
-			lg.translate(-px, -py)
-		end
-	end
-
-	--[[
 	lg.translate(math.floor(tx or 0), math.floor(ty or 0))
 
 	for _, layer in ipairs(self.layers) do
@@ -930,7 +826,6 @@ function Map:draw(tx, ty, sx, sy)
 			self:drawLayer(layer)
 		end
 	end
-	]]
 
 	lg.pop()
 
@@ -950,15 +845,7 @@ end
 -- @param layer The Layer to draw
 function Map.drawLayer(_, layer)
 	local r,g,b,a = lg.getColor()
-	-- if the layer has a tintcolor set
-	if layer.tintcolor then 
-		r, g, b, a = unpack(layer.tintcolor)
-		a = a or 255 -- alpha may not be specified
-		lg.setColor(r/255, g/255, b/255, a/255) -- Tiled uses 0-255
-	-- if a tintcolor is not given just use the current color
-	else
-		lg.setColor(r, g, b, a * layer.opacity)
-	end
+	lg.setColor(r, g, b, a * layer.opacity)
 	layer:draw()
 	lg.setColor(r,g,b,a)
 end
@@ -976,7 +863,7 @@ function Map:drawTileLayer(layer)
 	if layer.chunks then
 		for _, chunk in ipairs(layer.chunks) do
 			for _, batch in pairs(chunk.batches) do
-				lg.draw(batch, 0, 0)
+				lg.draw(batch, floor(chunk.x * self.tilewidth), floor(chunk.y * self.tileheight))
 			end
 		end
 
@@ -1040,18 +927,16 @@ function Map:drawObjectLayer(layer)
 	end
 
 	for _, object in ipairs(layer.objects) do
-		if object.visible then
-			if object.shape == "rectangle" and not object.gid then
-				drawShape(object.rectangle, "rectangle")
-			elseif object.shape == "ellipse" then
-				drawShape(object.ellipse, "ellipse")
-			elseif object.shape == "polygon" then
-				drawShape(object.polygon, "polygon")
-			elseif object.shape == "polyline" then
-				drawShape(object.polyline, "polyline")
-			elseif object.shape == "point" then
-				lg.points(object.x, object.y)
-			end
+		if object.shape == "rectangle" and not object.gid then
+			drawShape(object.rectangle, "rectangle")
+		elseif object.shape == "ellipse" then
+			drawShape(object.ellipse, "ellipse")
+		elseif object.shape == "polygon" then
+			drawShape(object.polygon, "polygon")
+		elseif object.shape == "polyline" then
+			drawShape(object.polyline, "polyline")
+		elseif object.shape == "point" then
+			lg.points(object.x, object.y)
 		end
 	end
 
@@ -1073,32 +958,6 @@ function Map:drawImageLayer(layer)
 
 	if layer.image ~= "" then
 		lg.draw(layer.image, layer.x, layer.y)
-		-- we need pixel sizes for drawing
-		local imagewidth, imageheight = layer.image:getDimensions()
-		-- if we're repeating on the Y axis...
-		if layer.repeaty then
-			local x = imagewidth
-			local y = imageheight
-			while y < self.height * self.tileheight do 
-				lg.draw(layer.image, x, y)
-				-- if we are *also* repeating on X
-				if layer.repeatx then 
-					x = x + imagewidth
-					while x < self.width * self.tilewidth do 
-						lg.draw(layer.image, x, y)
-						x = x + imagewidth
-					end
-				end
-				y = y + imageheight
-			end
-		-- if we're repeating on X alone...
-		elseif layer.repeatx then
-			local x = imagewidth
-			while x < self.width * self.tilewidth do 
-				lg.draw(layer.image, x, layer.y)
-				x = x + imagewidth
-			end
-		end
 	end
 end
 
@@ -1501,32 +1360,18 @@ function Map:convertPixelToTile(x, y)
 		local sideLenX  = 0
 		local sideLenY  = 0
 
-		local colW       = tileW / 2
-		local rowH       = tileH / 2
 		if staggerX then
 			sideLenX = self.hexsidelength
 			x = x - (even and tileW or (tileW - sideLenX) / 2)
-			colW = colW - (colW  - sideLenX / 2) / 2
 		else
 			sideLenY = self.hexsidelength
 			y = y - (even and tileH or (tileH - sideLenY) / 2)
-			rowH = rowH - (rowH  - sideLenY / 2) / 2
 		end
 
+		local colW       = ((tileW - sideLenX) / 2) + sideLenX
+		local rowH       = ((tileH - sideLenY) / 2) + sideLenY
 		local referenceX = ceil(x) / (colW * 2)
 		local referenceY = ceil(y) / (rowH * 2)
-
-    -- If in staggered line, then shift reference by 0.5 of other axes
-		if staggerX then
-			if (floor(referenceX) % 2 == 0) == even then
-				referenceY = referenceY - 0.5
-			end
-		else
-			if (floor(referenceY) % 2 == 0) == even then
-				referenceX = referenceX - 0.5
-			end
-		end
-
 		local relativeX  = x - referenceX * colW * 2
 		local relativeY  = y - referenceY * rowH * 2
 		local centers
@@ -1572,17 +1417,17 @@ function Map:convertPixelToTile(x, y)
 		end
 
 		local offsetsStaggerX = {
-			{ x = 1, y =  1 },
+			{ x = 0, y =  0 },
+			{ x = 1, y = -1 },
+			{ x = 1, y =  0 },
 			{ x = 2, y =  0 },
-			{ x = 2, y =  1 },
-			{ x = 3, y =  1 },
 		}
 
 		local offsetsStaggerY = {
-			{ x =  1, y = 1 },
+			{ x =  0, y = 0 },
+			{ x = -1, y = 1 },
+			{ x =  0, y = 1 },
 			{ x =  0, y = 2 },
-			{ x =  1, y = 2 },
-			{ x =  1, y = 3 },
 		}
 
 		local offsets = staggerX and offsetsStaggerX or offsetsStaggerY

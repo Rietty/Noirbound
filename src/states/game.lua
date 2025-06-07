@@ -6,11 +6,12 @@
 
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
+--- @module "libs.external.sti"
+local sti = require "libs.external.sti"
 local config = require "config"
 local music = require "libs.internal.audio.bg"
 local gamestate = require "libs.external.hump.gamestate"
 local credits = require "states.credits"
-local sti = require "libs.external.sti"
 
 -- Required for GameState management.
 local game = {}
@@ -42,7 +43,7 @@ function game:enter()
     -- Create a new entity
     self.player = concord.entity(self.world)
     local spawn = self:getSpawnPoint()
-    entities.player(self.player, spawn.x, spawn.y, 8, 8 , self.physicsWorld)
+    entities.player(self.player, spawn.x, spawn.y, 8, 8, self.physicsWorld)
 
     -- Add systems to the world.
     self.world:addSystems(
@@ -78,6 +79,7 @@ function game:enter()
     -- Set the default font:
     self.exitFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 6)
 
+    ---@diagnostic disable-next-line: undefined-global
     print("Map plugins:", self.map.plugins and table.concat(vim.tbl_keys(self.map.plugins), ", ") or "none")
 
     -- Music:
