@@ -4,7 +4,6 @@
 -- Load all components via concord.
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
-local states = require "constants.character"
 concord.utils.loadNamespace("src/components")
 
 local InputSystem = concord.system({ pool = { "direction", "grounded", "controllable" } })
@@ -31,6 +30,7 @@ function InputSystem:update(dt)
         end
 
         if e:has("damager") then
+            ---@diagnostic disable-next-line: param-type-mismatch
             if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
                 e.damager.value = true
             else
