@@ -10,6 +10,7 @@ local config = require "config"
 local music = require "libs.internal.audio.bg"
 local gamestate = require "libs.external.hump.gamestate"
 local credits = require "states.credits"
+local sti = require "libs.external.sti"
 
 -- Required for GameState management.
 local game = {}
@@ -27,22 +28,37 @@ function game:enter()
     -- Create a new world for the game state.
     self.world = concord.world()
 
+    -- Load the tilemap using STI.
+    self.map = sti("assets/maps/level1.lua", { "box2d" })
+
+    -- Create a physics world for collision detection.
+    self.physicsWorld = love.physics.newWorld(0, 981)
+
+    -- Enable Box2D physics for the map.
+    -- This automatically creates a Box2D world and initializes it with the map's physics data.
+    -- Layers marked as "collidable" in the map will be used for collision detection.
+    self.map:box2d_init(self.physicsWorld)
+
     -- Create a new entity
     self.player = concord.entity(self.world)
-    entities.player(self.player, 0, 0, 8, 8)
+    local spawn = self:getSpawnPoint()
+    entities.player(self.player, spawn.x, spawn.y, 8, 8 , self.physicsWorld)
 
     -- Add systems to the world.
     self.world:addSystems(
         systems.draw,
-        systems.collision,
-        systems.friction,
-        systems.gravity,
         systems.input,
         systems.physics,
-        systems.move,
         systems.state,
-        systems.animation
+        systems.animation,
+        systems.camera
     )
+
+    for _, layer in ipairs(self.map.layers) do
+        print(layer.name, layer.type, layer.physics and "has physics" or "no physics")
+    end
+
+    self.cameraSystem = self.world:getSystem(systems.camera) -- or store it however you manage systems
 
     -- Create a canvas and set the filters required for such a thing, as well as calulating the scale factor:
     self.canvas = love.graphics.newCanvas(config.virtualWidth, config.virtualHeight)
@@ -62,47 +78,64 @@ function game:enter()
     -- Set the default font:
     self.exitFont = love.graphics.newFont("assets/fonts/Direct_Message.ttf", 6)
 
+    print("Map plugins:", self.map.plugins and table.concat(vim.tbl_keys(self.map.plugins), ", ") or "none")
+
     -- Music:
     music.play("assets/sfx/bg1.wav", true, true)
 end
 
 -- Update per time unit.
 function game:update(dt)
-    -- Update music:
-    music.update(dt)
-    -- Update the world with the delta time.
+    music.update(dt)   
+    self.physicsWorld:update(dt)
     self.world:emit("update", dt)
+    self.map:update(dt)
 end
 
 -- Draw per frame.
 function game:draw()
+    -- Attach a camera.
+    -- self.cameraSystem:get():attach()
+
     -- Set canvas
     love.graphics.setCanvas(self.canvas)
     love.graphics.clear(0, 0, 0)
 
-    -- Draw a single "ground line" for the player to stand on.
-    love.graphics.setColor(0, 1, 0, 1) -- Set color to green
-    love.graphics.rectangle("fill", 0, config.virtualHeight - 1, config.virtualWidth, 1)
-
     -- Print on top (Escape to Exit!)
     love.graphics.setColor(1, 1, 1, 1) -- Reset color to white
     love.graphics.setFont(self.exitFont)
-    love.graphics.print("Press Escape to Exit!", (config.virtualWidth - self.exitFont:getWidth("Press Escape to Exit!")) / 2, 4)
+    love.graphics.print("Press Escape to Exit!",
+        (config.virtualWidth - self.exitFont:getWidth("Press Escape to Exit!")) / 2, 4)
+
+    -- Draw the map to the canvas.
+    self.map:draw()
 
     -- ECS draws entities to current canvas
     -- This should happen after any other drawing of the world, so it doesn't get overwritten or cleared.
-    self.world:emit("draw")
+    self.world:emit("draw")    
 
     -- Scale + draw canvas to screen
     love.graphics.setCanvas()
     love.graphics.setBlendMode("alpha", "premultiplied")
     love.graphics.draw(self.canvas, self.drawOffsetX, self.drawOffsetY, 0, self.scale, self.scale)
     love.graphics.setBlendMode("alpha", "alphamultiply")
+
+    -- Detach the camera.
+    -- self.cameraSystem:get():detach()
 end
 
 function game:keypressed(key)
     if key == "escape" then
         gamestate.switch(credits)
+    end
+end
+
+function game:getSpawnPoint() 
+    local layer = self.map.layers["PlayerSpawn"]
+    for _, obj in ipairs(layer.objects) do
+        if obj.name == "Player" then
+            return { x = obj.x, y = obj.y }
+        end
     end
 end
 

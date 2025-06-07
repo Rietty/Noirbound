@@ -6,12 +6,15 @@
 local concord = require "libs.external.concord.concord"
 concord.utils.loadNamespace("src/components")
 
-local InputSystem = concord.system({ pool = { "direction", "grounded", "controllable" } })
+local InputSystem = concord.system({ pool = { "direction", "controllable" } })
 
 function InputSystem:update(dt)
     for _, e in ipairs(self.pool) do
+        local body = e.physics.body
+        local vx, vy = body:getLinearVelocity()
+        local speed = e.speed.value
+
         local dx = 0
-        
         if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
             dx = dx - 1
             e.facing.value = "left"
@@ -20,21 +23,20 @@ function InputSystem:update(dt)
             dx = dx + 1
             e.facing.value = "right"
         end
+
+        body:setLinearVelocity(dx * speed, vy)
         
-        e.direction.vec.x = dx
-        e.direction.vec.y = 0
-
-        if (love.keyboard.isDown("up") or love.keyboard.isDown("w") or love.keyboard.isDown("space")) and e.grounded.value then
-            e.velocity.vec.y = -400
-            e.grounded.value = false
-        end
-
-        if e:has("damager") then
-            ---@diagnostic disable-next-line: param-type-mismatch
-            if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
-                e.damager.value = true
-            else
-                e.damager.value = false
+        if love.keyboard.isDown("up") or love.keyboard.isDown("w") or love.keyboard.isDown("space") then
+            local contacts = body:getContacts()
+            local grounded = false
+            for i = 1, #contacts do
+                if contacts[i].isTouching() then
+                    grounded = true
+                    break
+                end
+            end
+            if grounded then
+                body:applyLinearImpulse(0, -150)
             end
         end
     end

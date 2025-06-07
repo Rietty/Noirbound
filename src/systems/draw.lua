@@ -7,7 +7,7 @@
 local concord = require "libs.external.concord.concord"
 concord.utils.loadNamespace("src/components")
 
-local DrawSystem = concord.system({ pool = { "position", "size" } })
+local DrawSystem = concord.system({ pool = { "position" } })
 
 function DrawSystem:draw()
     for _, e in ipairs(self.pool) do

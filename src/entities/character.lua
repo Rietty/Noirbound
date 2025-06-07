@@ -10,7 +10,6 @@ concord.utils.loadNamespace("src/components")
 -- A character entity is a player or an enemy in the game, or even a non-playable character (NPC).
 return function(entity, x, y)
     entity:give("position", x, y)
-    :give("velocity", 0, 0)
     :give("direction", 0, 0)
     :give("state")
     :give("health")

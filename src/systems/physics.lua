@@ -5,17 +5,17 @@
 --- @module "libs.external.concord.concord"
 local concord = require "libs.external.concord.concord"
 
-local PhysicsSystem = concord.system({ pool = { "position", "velocity" } })
+local PhysicsSystem = concord.system({ pool = { "position", "physics" } })
 
 function PhysicsSystem:update(dt)
     for _, e in ipairs(self.pool) do
-        -- Move based off the direction and such.
-        local position = e.position.vec
-        local velocity = e.velocity.vec
+        local body = e.physics.body
+        local x, y = body:getPosition()
+        e.position.vec.x = x
+        e.position.vec.y = y
 
-        -- Update position based on velocity.
-        position.x = position.x + velocity.x * dt
-        position.y = position.y + velocity.y * dt
+        -- Print debug information if needed
+        -- print(string.format("Entity %s Position: (%.2f, %.2f)", e.id, x, y))
     end
 end
 

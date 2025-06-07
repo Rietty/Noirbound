@@ -22,19 +22,22 @@ local animations = {
     attack = anim8.newAnimation(grid(4, 3), 0.2),
 }
 
-return function(entity, x, y, width, height)
+return function(entity, x, y, width, height, physicsWorld)
+    local body = love.physics.newBody(physicsWorld, x, y, "dynamic")
+    local shape = love.physics.newRectangleShape(width, height)
+    local fixture = love.physics.newFixture(body, shape)
+ 
     entity:assemble(character, x, y)
     :give("animation")
-    :give("friction")
-    :give("gravity")
     :give("persistent")
-    :give("grounded")
-    :give("size", width, height)
     :give("sprite", image)
     :give("controllable")
+    :give("focus")
     :give("interactor")
     :give("speed", 100)
     :give("id", "AXEL")
     :give("animation", animations, states.idle)
     :give("facing", "right")
+    :give("physics", body, shape, fixture)
+    :give("size", width, height)
 end
