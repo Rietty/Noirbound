@@ -56,7 +56,7 @@ function game:enter()
     )
 
     for _, layer in ipairs(self.map.layers) do
-        print(layer.name, layer.type, layer.physics and "has physics" or "no physics")
+        print(layer.name, layer.class, layer.physics and "has physics" or "no physics")
     end
 
     self.cameraSystem = self.world:getSystem(systems.camera) -- or store it however you manage systems

@@ -68,7 +68,7 @@ return {
 		for _, layer in ipairs(map.layers) do
 			-- Entire layer
 			if layer.properties.collidable == true then
-				if layer.type == "tilelayer" then
+				if layer.class == "tilelayer" then
 					for y, tiles in ipairs(layer.data) do
 						for x, tile in pairs(tiles) do
 
@@ -106,7 +106,7 @@ return {
 							table.insert(collidables, t)
 						end
 					end
-				elseif layer.type == "imagelayer" then
+				elseif layer.class == "imagelayer" then
 					world:add(layer, layer.x, layer.y, layer.width, layer.height)
 					table.insert(collidables, layer)
 				end
@@ -114,7 +114,7 @@ return {
 
 			-- individual collidable objects in a layer that is not "collidable"
 			-- or whole collidable objects layer
-		  if layer.type == "objectgroup" then
+		  if layer.class == "objectgroup" then
 				for _, obj in ipairs(layer.objects) do
 					if layer.properties.collidable == true or obj.properties.collidable == true then
 						if obj.shape == "rectangle" then
